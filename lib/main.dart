@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestoreCrud/editDialog.dart';
 import 'package:firestoreCrud/services/database.dart';
+import 'package:firestoreCrud/task.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -44,19 +45,30 @@ class _ToDoListState extends State<ToDoList> {
           return ListView.builder(
             padding: const EdgeInsets.all(10.0),
             itemCount: snapshot.data.documents.length,
-            itemBuilder: (BuildContext context, int index) => Container(
-              margin: const EdgeInsets.all(10),
-              child: Text(
-                snapshot.data.documents[index]['content'],
-                style: TextStyle(fontSize: 21),
-              ),
-            ),
+            itemBuilder: (BuildContext context, int index) => Task(
+                content: snapshot.data.documents[index]['content'],
+                id: snapshot.data.documents[index].documentID,
+                update: _updateTask,
+                delete: _deleteTask),
           );
         } else {
           return Container();
         }
       },
     );
+  }
+
+  void _updateTask(String updatedValue, String id) {
+    var task = <String, dynamic>{
+      'content': updatedValue,
+      'timestamp': DateTime.now().millisecondsSinceEpoch
+    };
+
+    Database.updateTask(id, task);
+  }
+
+  void _deleteTask(String id) {
+    Database.deleteTask(id);
   }
 
   Future<void> _displayDialog(BuildContext context) async {
