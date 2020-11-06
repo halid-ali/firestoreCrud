@@ -1,24 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Database {
-  static final Firestore _db = Firestore.instance;
+  static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   static Future<void> addTask(Map<String, dynamic> task) async {
-    await _db.collection('tasks').document().setData(task).catchError((e) {
+    await _db.collection('tasks').doc().set(task).catchError((e) {
       print(e);
     });
     return true;
   }
 
   static Future<void> updateTask(String id, Map<String, dynamic> task) async {
-    await _db.collection('tasks').document(id).updateData(task).catchError((e) {
+    await _db.collection('tasks').doc(id).update(task).catchError((e) {
       print(e);
     });
     return true;
   }
 
   static Future<void> deleteTask(String id) async {
-    await _db.collection('tasks').document(id).delete().catchError((e) {
+    await _db.collection('tasks').doc(id).delete().catchError((e) {
       print(e);
     });
     return true;

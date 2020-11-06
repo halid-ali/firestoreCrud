@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firestoreCrud/editDialog.dart';
 import 'package:firestoreCrud/services/database.dart';
 import 'package:firestoreCrud/task.dart';
@@ -11,7 +12,24 @@ void main() {
 class ToDoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'To-Do List', home: ToDoList());
+    return FutureBuilder(
+      // Initialize FlutterFire
+      future: Firebase.initializeApp(),
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          return Container();
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(title: 'To-Do List', home: ToDoList());
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return Container();
+      },
+    );
   }
 }
 
@@ -36,7 +54,7 @@ class _ToDoListState extends State<ToDoList> {
 
   Widget _getTasks() {
     return StreamBuilder(
-      stream: Firestore.instance
+      stream: FirebaseFirestore.instance
           .collection('tasks')
           .orderBy('timestamp', descending: true)
           .snapshots(),
@@ -44,10 +62,10 @@ class _ToDoListState extends State<ToDoList> {
         if (snapshot.hasData) {
           return ListView.builder(
             padding: const EdgeInsets.all(10.0),
-            itemCount: snapshot.data.documents.length,
+            itemCount: snapshot.data.docs.length,
             itemBuilder: (BuildContext context, int index) => Task(
-                content: snapshot.data.documents[index]['content'],
-                id: snapshot.data.documents[index].documentID,
+                content: snapshot.data.docs[index]['content'],
+                id: snapshot.data.docs[index].id,
                 update: _updateTask,
                 delete: _deleteTask),
           );

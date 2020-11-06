@@ -8,7 +8,7 @@ class Task extends StatelessWidget {
   final UpdateCallback update;
   final DeleteCallback delete;
 
-  TextEditingController updateText = TextEditingController();
+  final TextEditingController updateText = TextEditingController();
 
   Task(
       {@required this.content,
